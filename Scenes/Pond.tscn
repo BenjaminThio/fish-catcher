@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://Pond.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/Pond.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
 
 [sub_resource type="RectangleShape2D" id=1]
@@ -70,9 +70,6 @@ margin_top = 200.0
 margin_right = 1024.0
 margin_bottom = 328.0
 color = Color( 0.619608, 0.956863, 1, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Center Water" type="ColorRect" parent="."]
 modulate = Color( 0.32549, 0.635294, 1, 0.717647 )
@@ -96,19 +93,12 @@ __meta__ = {
 [node name="Rotate" type="Label" parent="."]
 margin_right = 128.0
 margin_bottom = 32.0
-rect_pivot_offset = Vector2( -232, 72 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Direction" type="Label" parent="."]
 margin_top = 32.0
 margin_right = 128.0
 margin_bottom = 64.0
 rect_pivot_offset = Vector2( -232, 72 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Shoot" type="Label" parent="."]
 margin_top = 64.0
@@ -122,9 +112,6 @@ __meta__ = {
 margin_top = 96.0
 margin_right = 128.0
 margin_bottom = 128.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Score" type="Label" parent="."]
 margin_top = 128.0
@@ -137,7 +124,6 @@ __meta__ = {
 
 [node name="DirectionController" type="Sprite" parent="."]
 position = Vector2( 512, 64 )
-rotation = 1.5708
 texture = ExtResource( 2 )
 
 [node name="Rope" type="ColorRect" parent="DirectionController"]
@@ -165,20 +151,19 @@ rotation = -1.5708
 position = Vector2( 15.2578, 15.795 )
 shape = SubResource( 1 )
 
-[node name="ToRight1" type="Position2D" parent="."]
+[node name="Right1" type="Position2D" parent="."]
 position = Vector2( 32, 352 )
 
-[node name="ToLeft1" type="Position2D" parent="."]
+[node name="Left1" type="Position2D" parent="."]
 position = Vector2( 992, 416 )
 
-[node name="ToRight2" type="Position2D" parent="."]
+[node name="Right2" type="Position2D" parent="."]
 position = Vector2( 32, 544 )
 
-[node name="ToLeft2" type="Position2D" parent="."]
+[node name="Left2" type="Position2D" parent="."]
 position = Vector2( 992, 480 )
 
 [node name="Water Shader" type="Sprite" parent="."]
-visible = false
 material = SubResource( 3 )
 position = Vector2( 512, 400 )
 scale = Vector2( 16, 6.25 )
@@ -187,5 +172,5 @@ texture = ExtResource( 2 )
 [node name="Timer" type="Timer" parent="."]
 wait_time = 3.0
 
-[connection signal="body_entered" from="DirectionController/Rope/Hook/Area2D" to="." method="_on_body_entered"]
-[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="body_entered" from="DirectionController/Rope/Hook/Area2D" to="." method="Catch"]
+[connection signal="timeout" from="Timer" to="." method="IsTimeToSpawnFish"]

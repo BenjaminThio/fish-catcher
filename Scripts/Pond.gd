@@ -1,17 +1,15 @@
 extends Node2D
 
-var rotate = true
-var rotateSpeed = 3
-var ropeSpeed = 3
-var minRopeLength = 32
-var maxRopeLength = 470
-var direction = false #false = left, true = right
-var shoot = false
-var allowUserInput = true
-var score = 0
-var catch = ""
-const toLeftFish = preload("res://ToLeftFish.tscn")
-const toRightFish = preload("res://ToRightFish.tscn")
+const minRopeLength: int = 32
+const maxRopeLength : int= 470
+const rotateSpeed: int = 3
+const ropeSpeed: int = 3
+var rotate: bool = true
+var direction: bool = false
+var shoot: bool = false
+var allowUserInput: bool = true
+var catch: String = ""
+var score: int = 0
 
 func _ready():
 	if not direction: 
@@ -21,31 +19,28 @@ func _ready():
 
 func _process(delta):
 	$Rotate.text = "Rotate: " + str(rotate)
-	if not direction:
-		$Direction.text = "Direction: Left"
-	elif direction:
-		$Direction.text = "Direction: Right"
+	$Direction.text = "Direction: " + ["Left", "Right"][int(direction)]
 	$Shoot.text = "Shoot: " + str(shoot)
 	$AllowUserInput.text = "Allow User Input: " + str(allowUserInput)
 	$Score.text = "Score: " + str(score)
 	
-	if $DirectionController.rotation_degrees >= 90 and $DirectionController.rotation_degrees > 89.9:
+	if $DirectionController.rotation_degrees >= 90:
 		direction = true
-	elif $DirectionController.rotation_degrees <= -90 and $DirectionController.rotation_degrees < -90.1:
+	elif $DirectionController.rotation_degrees <= -90:
 		direction = false
 	if rotate:
 		if not direction:
 			$DirectionController.rotate(rotateSpeed * delta)
 		elif direction:
 			$DirectionController.rotate(-rotateSpeed * delta)
-	
+
 	if allowUserInput:
 		if Input.is_action_just_pressed("Space"):
 			#cheat shoot = not shoot
 			if allowUserInput:
 				shoot = true
 				allowUserInput = false
-	
+
 	if shoot:
 		rotate = false
 		if $DirectionController/Rope.rect_size.y + 1 <= maxRopeLength:
@@ -65,34 +60,35 @@ func _process(delta):
 			rotate = true
 			allowUserInput = true
 			if catch != "":
-				score += 1
 				get_node(catch).queue_free()
 				catch = ""
+				score += 1
 				$DirectionController/Rope/Hook/Area2D.show()
 
 	if ($Timer.time_left == 0):
 		$Timer.start()
 
-func _on_body_entered(body):
+func Catch(body):
 	shoot = false
 	allowUserInput = false
 	catch = body.get_parent().get_parent().name + "/" + body.get_parent().name
 
-func _on_Timer_timeout():
+func IsTimeToSpawnFish():
+	var fish: Sprite = preload("res://Instances/Fish.tscn").instance()
+	var fishDirection: String = RandomDirection()
+	var fishSpawnPoint: String =  str(RandomSpawnPoint())
+	get_node(fishDirection + fishSpawnPoint).add_child(fish)
+	if fishDirection == "Left":
+		get_node(fishDirection + fishSpawnPoint).get_child(0).speed *= -1
+	elif fishDirection == "Right":
+		get_node(fishDirection + fishSpawnPoint).get_child(0).speed *= 1
+
+func RandomDirection():
 	randomize()
-	var randomDirection
-	var choiceDirection = [false, true, false, true, false, true, false, true, false, true]
-	randomDirection = choiceDirection[randi() % choiceDirection.size()]
-	var spawnedFish
-	var spawnPoint = RandomSpawnPoint()
-	if not randomDirection:
-		spawnedFish = toRightFish.instance()
-		get_node("ToRight" + str(spawnPoint)).add_child(spawnedFish)
-	elif randomDirection:
-		spawnedFish = toLeftFish.instance()
-		get_node("ToLeft" + str(spawnPoint)).add_child(spawnedFish)
+	var directions: Array = ["Left", "Right"]
+	return directions[randi() % directions.size()]
 
 func RandomSpawnPoint():
 	randomize()
-	var choiceSpawnPoint = [1, 2, 1, 2, 1, 2, 1, 2, 1, 2]
-	return choiceSpawnPoint[randi() % choiceSpawnPoint.size()]
+	var spawnPoints: Array = [1, 2]
+	return spawnPoints[randi() % spawnPoints.size()]
